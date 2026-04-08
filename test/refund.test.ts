@@ -81,3 +81,41 @@ describe('Refund', () => {
     expect(body.toString()).toBe('');
   });
 });
+
+describe('Verify Refund', () => {
+  const mockGet = jest.fn();
+  let chapa: Chapa;
+
+  beforeEach(() => {
+    mockGet.mockReset();
+    (axios.create as jest.Mock).mockReturnValue({ get: mockGet });
+    chapa = new Chapa({ secretKey: 'test-secret-key' });
+  });
+
+  it('should validate required ref_id', async () => {
+    await expect(
+      chapa.verifyRefund({} as any)
+    ).rejects.toThrow();
+    expect(mockGet).not.toHaveBeenCalled();
+  });
+
+  it('should call get method with correct url', async () => {
+    const options = {
+      ref_id: 'REF-1234',
+    };
+    const responseData = {
+      message: 'ok',
+      status: 'success',
+      data: { amount: 100 },
+    };
+    mockGet.mockResolvedValue({ data: responseData });
+
+    const response = await chapa.verifyRefund(options);
+
+    expect(response).toEqual(responseData);
+    expect(mockGet).toHaveBeenCalledTimes(1);
+    const [url, config] = mockGet.mock.calls[0];
+    expect(url).toBe('/refund/REF-1234/verify');
+    expect(config.signal).toBeUndefined();
+  });
+});

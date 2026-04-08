@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RefundOptions } from '../interfaces';
+import { RefundOptions, VerifyRefundOptions } from '../interfaces';
 
 const refundSchema = z.object({
   tx_ref: z.string(),
@@ -15,4 +15,12 @@ const refundSchema = z.object({
 
 export const validateRefundOptions = (options: RefundOptions) => {
   return refundSchema.parse(options);
+};
+
+const verifyRefundSchema = z.object({
+  ref_id: z.string(),
+});
+
+export const validateVerifyRefundOptions = (options: VerifyRefundOptions) => {
+  return verifyRefundSchema.parse(options);
 };

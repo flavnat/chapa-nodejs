@@ -14,3 +14,13 @@ export interface RefundResponse {
   status: string;
   data: Record<string, unknown>;
 }
+
+export interface VerifyRefundOptions {
+  ref_id: string;
+}
+
+export interface VerifyRefundResponse {
+  message: string;
+  status: string;
+  data: Record<string, unknown>;
+}
