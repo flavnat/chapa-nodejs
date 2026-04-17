@@ -25,6 +25,8 @@ import {
   InitializeResponse,
   RefundOptions,
   RefundResponse,
+  VerifyRefundOptions,
+  VerifyRefundResponse,
   TransferOptions,
   TransferResponse,
   VerifyOptions,
@@ -40,6 +42,7 @@ import {
   validateGetTransactionLogsOptions,
   validateInitializeOptions,
   validateRefundOptions,
+  validateVerifyRefundOptions,
   validateTransferOptions,
   validateVerifyOptions,
   validateVerifyTransferOptions,
@@ -88,6 +91,10 @@ interface IChapa {
     signal?: AbortSignal
   ): Promise<AuthorizeDirectChargeResponse>;
   refund(options: RefundOptions, signal?: AbortSignal): Promise<RefundResponse>;
+  verifyRefund(
+    options: VerifyRefundOptions,
+    signal?: AbortSignal
+  ): Promise<VerifyRefundResponse>;
   verifyWebhook(payload: WebhookPayload | string, signature: string): boolean;
 }
 
@@ -336,6 +343,20 @@ export class Chapa implements IChapa {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         }
+      );
+      return response.data;
+    });
+  }
+
+  async verifyRefund(
+    options: VerifyRefundOptions,
+    signal?: AbortSignal
+  ): Promise<VerifyRefundResponse> {
+    return withErrorHandling(async () => {
+      validateVerifyRefundOptions(options);
+      const response = await this.axiosInstance.get<VerifyRefundResponse>(
+        `${ChapaUrls.REFUND}/${options.ref_id}/verify`,
+        { signal }
       );
       return response.data;
     });
